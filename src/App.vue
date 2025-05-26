@@ -508,7 +508,19 @@
                     </q-item-section>
                   </q-item>
                   
-                  <!-- 小費設定 -->
+             
+                  <q-separator class="q-my-sm" />
+
+                  <!-- 總計金額 -->
+                  <q-item>
+                    <q-item-section>
+                      <q-item-label class="text-weight-bold text-h6">總計金額</q-item-label>
+                    </q-item-section>
+                    <q-item-section side>
+                      <span class="text-weight-bold text-h6 text-primary">{{ formatCurrency(totalCost + tipAmount) }} 元</span>
+                    </q-item-section>
+                  </q-item>
+                                         <!-- 小費設定 -->
                   <q-item>
                     <q-item-section>
                       <div class="row items-center">
@@ -537,17 +549,6 @@
                     </q-item-section>
                   </q-item>
                   
-                  <q-separator class="q-my-sm" />
-                  
-                  <!-- 總計金額 -->
-                  <q-item>
-                    <q-item-section>
-                      <q-item-label class="text-weight-bold text-h6">總計金額</q-item-label>
-                    </q-item-section>
-                    <q-item-section side>
-                      <span class="text-weight-bold text-h6 text-primary">{{ formatCurrency(totalCost + tipAmount) }} 元</span>
-                    </q-item-section>
-                  </q-item>
                 </q-list>
               </q-card-section>
             </q-card>
@@ -556,29 +557,33 @@
       </q-page>
     </q-page-container>
 
-    <q-footer elevated class="footer-gradient text-white">
-      <q-toolbar>
+    <q-footer elevated class="footer-gradient text-white" style="min-height: 64px">
+      <q-toolbar style="height: 5rem">
         <q-toolbar-title>
-          <div class="row items-center no-wrap">
-            <div class="col-auto">
-              <div class="text-h6">
-                總費用：<span ref="totalCostElement" class="cost-display">{{ formatCurrency(totalCost + tipAmount) }}</span> 元 <span v-if="selectedCategory === '鐘點制'">({{ hourCount * dayCount }} 小時)</span>
+          <div class="row items-center" style="width: 100%">
+            <div class="col-grow" style="white-space: nowrap">
+              <div class="column" style="line-height: 1.5">
+                <div class="row items-center">
+                  <span class="text-subtitle1">總費用：</span>
+                  <span ref="totalCostElement" class="text-h5 cost-display">{{ formatCurrency(totalCost + tipAmount) }}</span>
+                  <span v-if="selectedCategory === '鐘點制'" class="text-subtitle1" style="margin-left: 8px">
+                    ({{ hourCount * dayCount }} 小時)
+                  </span>
+                  <span class="text-subtitle1">元</span>
+                  <q-badge v-if="tipAmount > 0" color="pink-6" class="q-ml-sm" style="padding: 4px 8px">
+                    含小費 {{ formatCurrency(tipAmount) }} 元
+                  </q-badge>
+                </div>
+                <div v-if="selectedCategory === '鐘點制'" class="row items-center q-mt-xs">
+                  <span class="text-caption text-grey-7">每小時上限500元</span>
+                </div>
               </div>
-            </div>
-            
-            <div class="col-auto q-ml-sm" v-if="tipAmount > 0">
-              <q-badge color="pink-6">
-                含小費 {{ formatCurrency(tipAmount) }} 元
-              </q-badge>
             </div>
           </div>
         </q-toolbar-title>
         
 
-        
-        <q-btn flat round icon="help" @click="showHelp = true">
-          <q-tooltip>幫助</q-tooltip>
-        </q-btn>
+       
       </q-toolbar>
     </q-footer>
     
