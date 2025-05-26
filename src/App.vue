@@ -562,7 +562,7 @@
           <div class="row items-center no-wrap">
             <div class="col-auto">
               <div class="text-h6">
-                總費用：<span ref="totalCostElement" class="cost-display">{{ formatCurrency(totalCost + tipAmount) }}</span> 元
+                總費用：<span ref="totalCostElement" class="cost-display">{{ formatCurrency(totalCost + tipAmount) }}</span> 元 <span v-if="selectedCategory === '鐘點制'">({{ hourCount * dayCount }} 小時)</span>
               </div>
             </div>
             
@@ -766,27 +766,9 @@ const hourlyRateReachedLimit = computed(() => {
   return hourlyRate.value >= 500
 })
 
-// 判斷選擇某項目後是否會超過上限
+// 移除500元限制，永遠返回false
 function wouldExceedLimit(item) {
-  if (selectedCategory.value !== '鐘點制' || item.subCategory === '時段加價') {
-    return false
-  }
-  
-  // 計算選擇該項目後的總費用
-  const currentTotal = selectedHourlyItems.value.reduce((sum, i) => {
-    return i.subCategory === '時段加價' ? sum : sum + i.price
-  }, 0)
-  
-  // 如果項目已經被選中，則不會增加費用
-  if (isSelected(item)) {
-    return false
-  }
-  
-  // 計算添加該項目後的總費用
-  const newTotal = currentTotal + item.price
-  
-  // 判斷是否超過500元
-  return newTotal > 500
+  return false;
 }
 
 // 鐘點制費用計算（考慮小時數和天數）
@@ -794,28 +776,13 @@ const hourlyTotalWithTime = computed(() => {
   if (selectedCategory.value !== '鐘點制') return 0
   
   // 基本費用（每項服務的價格）
-  let baseTotal = selectedHourlyItems.value.reduce((sum, item) => {
+  return selectedHourlyItems.value.reduce((sum, item) => {
     // 時段加價項目不要乘以小時數
     if (item.subCategory === '時段加價') {
       return sum + (item.price * dayCount.value)
     }
     return sum + (item.price * hourCount.value * dayCount.value)
   }, 0)
-  
-  // 鐘點制上限為500元/小時
-  const hourlyRate = selectedHourlyItems.value.reduce((sum, item) => {
-    return item.subCategory === '時段加價' ? sum : sum + item.price
-  }, 0)
-  
-  // 如果每小時費用超過500元，則以500元計算
-  if (hourlyRate > 500) {
-    const additionalFees = selectedHourlyItems.value.reduce((sum, item) => {
-      return item.subCategory === '時段加價' ? sum + (item.price * dayCount.value) : sum
-    }, 0)
-    return (500 * hourCount.value * dayCount.value) + additionalFees
-  }
-  
-  return baseTotal
 })
 
 
