@@ -4,7 +4,7 @@ import vue from '@vitejs/plugin-vue'
 import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 
 export default defineConfig({
-  base: '/dogfriend/',
+  base: '/-Lizi-0923-.github.io-NS/',
   plugins: [
     vue({
       template: { transformAssetUrls }
