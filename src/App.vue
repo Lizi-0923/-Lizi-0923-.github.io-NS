@@ -187,9 +187,43 @@
                   </div>
                 </div>
                 
-                <div class="text-subtitle1 q-mb-sm">{{ selectedCategory === '包班制' ? '選擇附加服務' : '選擇服務項目' }}</div>
+                <div class="text-subtitle1 q-mb-sm">{{ selectedCategory === '包班制' ? '選擇服務項目' : '選擇服務項目' }}</div>
                 <q-list bordered separator class="rounded-borders">
                   <transition-group name="list" tag="div">
+                    <!-- 包班制必選項目（介紹費）放在選擇服務項目的第一個位置 -->
+                    <q-item
+                      v-if="selectedCategory === '包班制'"
+                      v-for="item in careItems.filter(item => item.category === '包班制' && item.subCategory === '必選服務')"
+                      :key="item.code"
+                      class="service-item q-pa-md mandatory-item"
+                    >
+                      <q-item-section avatar>
+                        <q-icon :name="item.icon" color="green" size="md" />
+                      </q-item-section>
+                      <q-item-section>
+                        <q-item-label class="text-weight-bold text-body1">
+                          {{ item.name }}
+                          <q-badge color="positive" class="q-ml-sm">
+                            必選
+                          </q-badge>
+                        </q-item-label>
+                        <q-item-label caption class="q-mt-sm">
+                          <div class="row items-center">
+                            <q-icon name="paid" size="xs" color="primary" class="q-mr-xs" />
+                            <span>金額：{{ item.price }} 元</span>
+                          </div>
+                        </q-item-label>
+                      </q-item-section>
+                      <q-item-section side>
+                        <q-checkbox
+                          v-model="selectedItems"
+                          :val="item"
+                          color="primary"
+                          disable
+                          :aria-label="`選擇 ${item.name}`"
+                        />
+                      </q-item-section>
+                    </q-item>
                     <q-item
                       v-for="item in filteredItems"
                       :key="item.code"
@@ -656,18 +690,21 @@ const careItems = ref([
   { code: 'HR11', name: '二次加價急徵', price: 30, category: '鐘點制', subCategory: '時段加價', icon: 'bolt', color: 'orange' },
   
   // 包班制項目 - 基本班次
-  { code: 'SH01', name: '12小時/班', price: 3000, category: '包班制', subCategory: '基本班次', icon: 'schedule', color: 'primary' },
-  { code: 'SH02', name: '24小時/班', price: 5500, category: '包班制', subCategory: '基本班次', icon: 'access_time_filled', color: 'secondary' },
+  { code: 'SH01', name: '12小時/班', price: 3300, category: '包班制', subCategory: '基本班次', icon: 'schedule', color: 'primary' },
+  { code: 'SH02', name: '24小時/班', price: 6200, category: '包班制', subCategory: '基本班次', icon: 'access_time_filled', color: 'secondary' },
   
   // 包班制項目 - 特殊需求
-  { code: 'SH03', name: '體重>50公斤並需協助上下床', price: 200, category: '包班制', subCategory: '特殊需求', icon: 'bed', color: 'deep-purple' },
+  { code: 'SH03', name: '體重>50公斤', price: 200, category: '包班制', subCategory: '特殊需求', icon: 'bed', color: 'deep-purple' },
   { code: 'SH04', name: '意識不清或無法配合', price: 200, category: '包班制', subCategory: '特殊需求', icon: 'psychology', color: 'purple' },
-  { code: 'SH05', name: '有任何傳染病或需要隔離病人', price: 300, category: '包班制', subCategory: '特殊需求', icon: 'coronavirus', color: 'red' }
+  { code: 'SH05', name: '有任何傳染病或需要隔離病人', price: 300, category: '包班制', subCategory: '特殊需求', icon: 'coronavirus', color: 'red' },
+  
+  // 包班制項目 - 必選項目
+  { code: 'SH06', name: '介紹費(必選)', price: 300, category: '包班制', subCategory: '必選服務', selectedByDefault: true, icon: 'handshake', color: 'green' }
 ])
 
 // 狀態變數
 const selectedHourlyItems = ref(careItems.value.filter(item => item.selectedByDefault && item.category === '鐘點制'))
-const selectedShiftItems = ref([])
+const selectedShiftItems = ref(careItems.value.filter(item => item.selectedByDefault && item.category === '包班制'))
 const selectedCategory = ref('鐘點制')
 const selectedShiftType = ref('SH01') // 預設選擇12小時班
 const searchText = ref('')
@@ -816,8 +853,8 @@ const filteredItems = computed(() => {
     let matchPrice = true
     let matchSubCategory = true
     
-    // 如果是包班制，只顯示特殊需求項目，不顯示基本班次項目
-    if (selectedCategory.value === '包班制' && item.subCategory === '基本班次') {
+    // 如果是包班制，只顯示特殊需求項目，不顯示基本班次項目和必選項目(介紹費)
+    if (selectedCategory.value === '包班制' && (item.subCategory === '基本班次' || item.subCategory === '必選服務')) {
       return false;
     }
     
@@ -1066,7 +1103,7 @@ function selectShiftType(item) {
 function resetSelections() {
   // 重置為初始狀態，保留必選項目
   selectedHourlyItems.value = careItems.value.filter(item => item.selectedByDefault && item.category === '鐘點制')
-  selectedShiftItems.value = []
+  selectedShiftItems.value = careItems.value.filter(item => item.selectedByDefault && item.category === '包班制')
   selectedShiftType.value = 'SH01' // 重置為12小時班
   searchText.value = ''
   
