@@ -690,7 +690,7 @@ const careItems = ref([
   { code: 'HR11', name: '二次加價急徵', price: 30, category: '鐘點制', subCategory: '時段加價', icon: 'bolt', color: 'orange' },
   
   // 包班制項目 - 基本班次
-  { code: 'SH01', name: '12小時/班', price: 3300, category: '包班制', subCategory: '基本班次', icon: 'schedule', color: 'primary' },
+  { code: 'SH01', name: '12小時/班', price: 3500, category: '包班制', subCategory: '基本班次', icon: 'schedule', color: 'primary' },
   { code: 'SH02', name: '24小時/班', price: 6200, category: '包班制', subCategory: '基本班次', icon: 'access_time_filled', color: 'secondary' },
   
   // 包班制項目 - 特殊需求
